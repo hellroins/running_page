@@ -13,6 +13,7 @@ from .db import Activity, init_db, update_or_create_activity
 
 from synced_data_file_logger import save_synced_data_file_list
 
+import requests
 
 IGNORE_BEFORE_SAVING = os.getenv("IGNORE_BEFORE_SAVING", False)
 
@@ -26,6 +27,22 @@ class Generator:
         self.client_secret = ""
         self.refresh_token = ""
         self.only_run = False
+
+    def download_activity_gpx(self, activity_id, save_dir="gpx_files"):
+        """Download GPX file dari Strava API dan simpan ke folder lokal."""
+        os.makedirs(save_dir, exist_ok=True)
+        headers = {"Authorization": f"Bearer {self.access_token}"}
+        url = f"https://www.strava.com/api/v3/activities/{activity_id}/export_gpx"
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            gpx_path = os.path.join(save_dir, f"{activity_id}.gpx")
+            with open(gpx_path, "wb") as f:
+                f.write(response.content)
+            print(f"✅ Saved GPX for activity {activity_id}")
+            return gpx_path
+        else:
+            print(f"⚠️ Failed to download GPX for {activity_id}: {response.status_code}")
+            return None
 
     def set_strava_config(self, client_id, client_secret, refresh_token):
         self.client_id = client_id
@@ -65,6 +82,7 @@ class Generator:
                 filters = {"before": datetime.datetime.now(datetime.timezone.utc)}
 
         for activity in self.client.get_activities(**filters):
+            self.download_activity_gpx(activity.id)
             if self.only_run and activity.type != "Run":
                 continue
             if IGNORE_BEFORE_SAVING:
