@@ -4,6 +4,7 @@ import {
   formatRunTime,
   Activity,
   RunIds,
+  colorForRun,
 } from '@/utils/utils';
 import { SHOW_ELEVATION_GAIN } from '@/utils/const';
 import styles from './style.module.css';
@@ -37,11 +38,31 @@ const RunRow = ({
     locateActivity([run.run_id]);
   };
 
+  const tanggal = new Date(run.start_date.replace(' ', 'T'));
+
+  const opsi: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    timeZone: 'Asia/Jakarta',
+  };
+
+  const formattedTanggal = new Intl.DateTimeFormat('id-ID', opsi).format(
+    tanggal
+  );
+
   return (
     <tr
-      className={`${styles.runRow} ${runIndex === elementIndex ? styles.selected : ''}`}
+      className={`
+          ${styles.runRow} ${runIndex === elementIndex ? styles.selected : ''}
+      `}
       key={run.start_date_local}
       onClick={handleClick}
+      style={{ color: colorForRun(run) }}
     >
       <td>{titleForRun(run)}</td>
       <td>{distance}</td>
@@ -49,7 +70,7 @@ const RunRow = ({
       {paceParts && <td>{paceParts}</td>}
       <td>{heartRate && heartRate.toFixed(0)}</td>
       <td>{runTime}</td>
-      <td className={styles.runDate}>{run.start_date_local}</td>
+      <td className={styles.runDate}>{formattedTanggal}</td>
     </tr>
   );
 };

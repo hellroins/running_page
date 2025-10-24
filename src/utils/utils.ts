@@ -243,13 +243,13 @@ const colorForRun = (run: Activity): string => {
       }
       return dynamicRunColor;
     }
-    case 'cycling':
+    case 'Cycle':
       return CYCLING_COLOR;
-    case 'hiking':
+    case 'Hike':
       return HIKING_COLOR;
-    case 'walking':
+    case 'Walk':
       return WALKING_COLOR;
-    case 'swimming':
+    case 'Swim':
       return SWIMMING_COLOR;
     default:
       return MAIN_COLOR;
@@ -290,6 +290,7 @@ const geoJsonForMap = async (): Promise<FeatureCollection<RPGeometry>> => {
 };
 
 const getActivitySport = (act: Activity): string => {
+  console.log(act.type);
   if (act.type === 'Run') {
     if (act.subtype === 'generic') {
       const runDistance = act.distance / 1000;
@@ -303,11 +304,11 @@ const getActivitySport = (act: Activity): string => {
     else if (act.subtype === 'treadmill')
       return ACTIVITY_TYPES.RUN_TREADMILL_TITLE;
     else return ACTIVITY_TYPES.RUN_GENERIC_TITLE;
-  } else if (act.type === 'hiking') {
+  } else if (act.type === 'Hike') {
     return ACTIVITY_TYPES.HIKING_TITLE;
-  } else if (act.type === 'cycling') {
+  } else if (act.type === 'Cycle') {
     return ACTIVITY_TYPES.CYCLING_TITLE;
-  } else if (act.type === 'walking') {
+  } else if (act.type === 'Walk') {
     return ACTIVITY_TYPES.WALKING_TITLE;
   }
   // if act.type contains 'skiing'
@@ -492,6 +493,7 @@ export {
   geoJsonForRuns,
   geoJsonForMap,
   titleForRun,
+  colorForRun,
   filterYearRuns,
   filterCityRuns,
   filterTitleRuns,

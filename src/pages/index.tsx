@@ -401,13 +401,18 @@ const Index = () => {
         {year === 'Total' ? (
           <SVGStat />
         ) : (
-          <RunTable
-            runs={runs}
-            locateActivity={locateActivity}
-            setActivity={setActivity}
-            runIndex={runIndex}
-            setRunIndex={setRunIndex}
-          />
+          <>
+            {singleRunId && (
+              <button onClick={() => console.log(singleRunId)}>Detail</button>
+            )}
+            <RunTable
+              runs={runs}
+              locateActivity={locateActivity}
+              setActivity={setActivity}
+              runIndex={runIndex}
+              setRunIndex={setRunIndex}
+            />
+          </>
         )}
       </div>
       {/* Enable Audiences in Vercel Analytics: https://vercel.com/docs/concepts/analytics/audiences/quickstart */}
