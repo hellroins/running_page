@@ -4,6 +4,7 @@ import string
 
 from geopy.geocoders import options, Nominatim
 from sqlalchemy import (
+    ForeignKey,
     Column,
     Float,
     Integer,
@@ -12,6 +13,7 @@ from sqlalchemy import (
     create_engine,
     inspect,
     text,
+    JSON,
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -50,7 +52,7 @@ class ActivityStrean(Base):
     __tablename__ = "activity_stream"
 
     id = Column(Integer, primary_key=True)
-    activity_id = Column(Integer, ForeignKey("activity.run_id"), unique=True)
+    activity_id = Column(Integer, ForeignKey("activities.run_id"), unique=True)
     heartrate = Column(JSON)  # list of int
     distance = Column(JSON)   # list of float
     cadence = Column(JSON)
