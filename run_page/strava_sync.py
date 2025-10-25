@@ -1,7 +1,7 @@
 import argparse
 import json
 
-from config import JSON_FILE, SQL_FILE
+from config import JSON_FILE, JSON_STREAM_FILE, SQL_FILE
 from generator import Generator
 
 
