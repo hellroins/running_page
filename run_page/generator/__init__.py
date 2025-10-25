@@ -182,10 +182,10 @@ class Generator:
 
             d = {
                 "id": activity.run_id,
-                "heartrate": stream.heartrate,
-                "distance": stream.distance,
-                "cadence": stream.cadence,
-                "altitude": stream.altitude,
+                "heartrate": stream.heartrate or [],
+                "distance": stream.distance or [],
+                "cadence": stream.cadence or [],
+                "altitude": stream.altitude or [],
             }
 
             activity_stream_list.append(d)
