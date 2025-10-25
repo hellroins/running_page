@@ -9,7 +9,7 @@ from sqlalchemy import func
 
 from polyline_processor import filter_out
 
-from .db import Activity, init_db, update_or_create_activity, update_or_create_activity_stream
+from .db import Activity, ActivityStream, init_db, update_or_create_activity, update_or_create_activity_stream
 
 from synced_data_file_logger import save_synced_data_file_list
 
@@ -170,7 +170,7 @@ class Generator:
 
         activities = query.order_by(Activity.start_date_local)
         activity_stream_list = []
-        
+
         for activity in activities:
             stream = (
                 self.session.query(ActivityStream)
