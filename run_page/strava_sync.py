@@ -1,7 +1,8 @@
+import os
 import argparse
 import json
 
-from config import JSON_FILE, JSON_STREAM_FILE, SQL_FILE
+from config import JSON_FILE, JSON_STREAM_DIR, SQL_FILE
 from generator import Generator
 
 
@@ -25,10 +26,21 @@ def run_strava_sync(
     activities_list = generator.load()
     with open(JSON_FILE, "w") as f:
         json.dump(activities_list, f)
+
+    os.makedirs(JSON_STREAM_DIR, exist_ok=True)
     
     activity_stream_list = generator.loadActivityStream()
-    with open(JSON_STREAM_FILE, "w") as f:
-        json.dump(activity_stream_list, f)
+
+    index_data = []
+
+    for activity in activity_stream_list:
+        act_id = activity["id"]
+        file_path = os.path.join(JSON_STREAM_DIR, f"{act_id}.json")
+
+        with open(file_path, "w") as f:
+            json.dump(activity, f, indent=2)
+
+    print(f"✅ Done! Generated {len(activity_stream_list)} activity stream files.")
 
 
 if __name__ == "__main__":
