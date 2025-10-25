@@ -53,10 +53,13 @@ class ActivityStream(Base):
 
     id = Column(Integer, primary_key=True)
     activity_id = Column(Integer, ForeignKey("activities.run_id"), unique=True)
-    heartrate = Column(JSON)  # list of int
-    distance = Column(JSON)   # list of float
+    heartrate = Column(JSON)
+    distance = Column(JSON)
+    time = Column(JSON)
     cadence = Column(JSON)
     altitude = Column(JSON)
+    velocity_smooth = Column(JSON)
+    latlng = Column(JSON)
 
 class Activity(Base):
     __tablename__ = "activities"
@@ -185,17 +188,28 @@ def update_or_create_activity(session, run_activity):
 
 def update_or_create_activity_stream(session, client, run_activity):
     try:
+        stream_types = [
+            "heartrate",
+            "distance",
+            "time",
+            "altitude",
+            "cadence",
+            "velocity_smooth",
+            "latlng",
+        ]
         streams = client.get_activity_streams(
             run_activity.id,
-            types=["heartrate", "distance", "cadence", "altitude"],
-            resolution="high",
-            series_type="distance"
+            types=stream_types,
+            resolution="high"
         )
         
         hr = safe_get(streams, "heartrate")
         dist = safe_get(streams, "distance")
-        cad = safe_get(streams, "cadence")
+        time = safe_get(streams, "time")
         alt = safe_get(streams, "altitude")
+        cad = safe_get(streams, "cadence")
+        vs = safe_get(streams, "velocity_smooth")
+        lat = safe_get(streams, "latlng")
 
         stream = (
             session.query(ActivityStream)
@@ -208,15 +222,21 @@ def update_or_create_activity_stream(session, client, run_activity):
                 activity_id=run_activity.id,
                 heartrate=hr,
                 distance=dist,
+                time=time,
                 cadence=cad,
-                altitude=alt
+                altitude=alt,
+                velocity_smooth=vs,
+                latlng=lat
             )
             session.add(stream)
         else:
             stream.heartrate = hr
             stream.distance = dist
+            stream.time = time
             stream.cadence = cad
             stream.altitude = alt
+            stream.velocity_smooth = vs
+            stream.latlng = lat
 
         return True
     except Exception as e:

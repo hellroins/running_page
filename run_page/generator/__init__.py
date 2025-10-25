@@ -184,8 +184,11 @@ class Generator:
                 "id": activity.run_id,
                 "heartrate": stream.heartrate or [],
                 "distance": stream.distance or [],
+                "time": stream.time or [],
                 "cadence": stream.cadence or [],
                 "altitude": stream.altitude or [],
+                "velocity_smooth": stream.velocity_smooth or [],
+                "latlng": stream.latlng or [],
             }
 
             activity_stream_list.append(d)
