@@ -26,6 +26,7 @@ import {
   RunIds,
 } from '@/utils/utils';
 import { useTheme } from '@/hooks/useTheme';
+import { Link } from 'react-router-dom';
 
 const Index = () => {
   const { siteTitle, siteUrl } = useSiteMetadata();
@@ -403,7 +404,9 @@ const Index = () => {
         ) : (
           <>
             {singleRunId && (
-              <button onClick={() => console.log(singleRunId)}>Detail</button>
+              <Link to={`/detail/${singleRunId}`} target="_blank">
+                <button>Buka Detail Halaman</button>
+              </Link>
             )}
             <RunTable
               runs={runs}
