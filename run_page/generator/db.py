@@ -46,6 +46,15 @@ ACTIVITY_KEYS = [
     "elevation_gain",
 ]
 
+class ActivityStrean(Base):
+    __tablename__ = "activity_stream"
+
+    id = Column(Integer, primary_key=True)
+    activity_id = Column(Integer, ForeignKey("activity.run_id"), unique=True)
+    heartrate = Column(JSON)  # list of int
+    distance = Column(JSON)   # list of float
+    cadence = Column(JSON)
+    altitude = Column(JSON)
 
 class Activity(Base):
     __tablename__ = "activities"
@@ -164,6 +173,45 @@ def update_or_create_activity(session, run_activity):
 
     return created
 
+def update_or_create_activity_stream(session, client, run_activity):
+    try:
+        streams = client.get_activity_streams(
+            run_activity.id,
+            types=["heartrate", "distance", "cadence", "altitude"],
+            resolution="high",
+            series_type="distance"
+        )
+
+        hr = streams.get("heartrate").data if "heartrate" in streams else None
+        dist = streams.get("distance").data if "distance" in streams else None
+        cad = streams.get("cadence").data if "cadence" in streams else None
+        alt = streams.get("altitude").data if "altitude" in streams else None
+
+        stream = (
+            session.query(ActivityStream)
+            .filter_by(activity_id=run_activity.id)
+            .first()
+        )
+
+        if not stream:
+            stream = ActivityStream(
+                activity_id=run_activity.id,
+                heartrate=hr,
+                distance=dist,
+                cadence=cad,
+                altitude=alt
+            )
+            session.add(stream)
+        else:
+            stream.heartrate = hr
+            stream.distance = dist
+            stream.cadence = cad
+            stream.altitude = alt
+
+        return True
+    except Exception as e:
+        print(f"Failed stream for {run_activity.id} {e}")
+        return False
 
 def add_missing_columns(engine, model):
     inspector = inspect(engine)
@@ -183,7 +231,6 @@ def add_missing_columns(engine, model):
                         f"ALTER TABLE {table_name} ADD COLUMN {column.name} {column_type}"
                     )
                 )
-
 
 def init_db(db_path):
     engine = create_engine(
