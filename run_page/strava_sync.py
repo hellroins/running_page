@@ -38,7 +38,7 @@ def run_strava_sync(
         file_path = os.path.join(JSON_STREAM_DIR, f"{act_id}.json")
 
         with open(file_path, "w") as f:
-            json.dump(activity, f, indent=2)
+            json.dump(activity, f, separators=(",", ":"))
 
     print(f"✅ Done! Generated {len(activity_stream_list)} activity stream files.")
 
