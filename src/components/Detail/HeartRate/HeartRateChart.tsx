@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import {
   ResponsiveContainer,
-  LineChart,
   Line,
   XAxis,
   YAxis,
@@ -9,6 +8,7 @@ import {
   Brush,
   Area,
   ReferenceArea,
+  ComposedChart,
 } from 'recharts';
 import {
   ChartPoint,
@@ -82,7 +82,7 @@ export default function HeartRateChart({ streams, umur }: Props) {
       <h2>Heart Rate</h2>
 
       <ResponsiveContainer width="100%" height={350}>
-        <LineChart
+        <ComposedChart
           data={data}
           margin={{ top: 10, right: 30, left: 10, bottom: 20 }}
         >
@@ -93,8 +93,8 @@ export default function HeartRateChart({ streams, umur }: Props) {
             </linearGradient>
 
             <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#EF9A9A" stopOpacity={0.6} />
-              <stop offset="100%" stopColor="#FFEBEE" stopOpacity={0.1} />
+              <stop offset="0%" stopColor="#E53935" stopOpacity={0.6} />
+              <stop offset="100%" stopColor="#B71C1C" stopOpacity={0.1} />
             </linearGradient>
           </defs>
 
@@ -105,7 +105,7 @@ export default function HeartRateChart({ streams, umur }: Props) {
               y1={z.min}
               y2={z.max}
               fill={z.color}
-              fillOpacity={0.3}
+              fillOpacity={0.5}
             />
           ))}
 
@@ -116,7 +116,7 @@ export default function HeartRateChart({ streams, umur }: Props) {
             interval="preserveStartEnd"
             tickFormatter={(sec) => formatTime(sec)}
           />
-          <YAxis domain={[0, 300]} />
+          <YAxis domain={['dataMin - 10', 'dataMax + 10']} />
           <Tooltip content={<CustomTooltip />} />
 
           {/* Area shading only */}
@@ -139,7 +139,7 @@ export default function HeartRateChart({ streams, umur }: Props) {
           />
 
           <Brush dataKey="t" height={20} />
-        </LineChart>
+        </ComposedChart>
       </ResponsiveContainer>
 
       <HRZoneStats zoneStats={zoneStats} />
