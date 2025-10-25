@@ -162,6 +162,35 @@ class Generator:
             activity_list.append(activity.to_dict())
 
         return activity_list
+    
+    def loadActivityStream(self):
+        query = self.session.query(Activity).filter(Activity.distance > 0.1)
+        if self.only_run:
+            query = query.filter(Activity.type == "Run")
+
+        activities = query.order_by(Activity.start_date_local)
+        activity_stream_list = []
+        
+        for activity in activities:
+            stream = (
+                self.session.query(ActivityStream)
+                .filter_by(activity_id=activity.run_id)
+                .first()
+            )
+            if not stream:
+                continue
+
+            d = {
+                "id": activity.run_id,
+                "heartrate": stream.heartrate,
+                "distance": stream.distance,
+                "cadence": stream.cadence,
+                "altitude": stream.altitude,
+            }
+
+            activity_stream_list.append(d)
+
+        return activity_stream_list
 
     def get_old_tracks_ids(self):
         try:

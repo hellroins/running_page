@@ -25,6 +25,10 @@ def run_strava_sync(
     activities_list = generator.load()
     with open(JSON_FILE, "w") as f:
         json.dump(activities_list, f)
+    
+    activity_stream_list = generator.loadActivityStream()
+    with open(JSON_STREAM_FILE, "w") as f:
+        json.dump(activity_stream_list, f, indent=2)
 
 
 if __name__ == "__main__":
