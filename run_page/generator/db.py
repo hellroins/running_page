@@ -48,7 +48,7 @@ ACTIVITY_KEYS = [
     "elevation_gain",
 ]
 
-class ActivityStrean(Base):
+class ActivityStream(Base):
     __tablename__ = "activity_stream"
 
     id = Column(Integer, primary_key=True)
