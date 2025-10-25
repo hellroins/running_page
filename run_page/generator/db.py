@@ -92,6 +92,14 @@ class Activity(Base):
         return out
 
 
+def safe_get(streams, key):
+    if streams is None:
+        return None
+    s = streams.get(key)
+    if s is None or s.data is None:
+        return None
+    return s.data
+
 def update_or_create_activity(session, run_activity):
     created = False
     try:
@@ -183,11 +191,11 @@ def update_or_create_activity_stream(session, client, run_activity):
             resolution="high",
             series_type="distance"
         )
-
-        hr = streams.get("heartrate").data if "heartrate" in streams else None
-        dist = streams.get("distance").data if "distance" in streams else None
-        cad = streams.get("cadence").data if "cadence" in streams else None
-        alt = streams.get("altitude").data if "altitude" in streams else None
+        
+        hr = safe_get(streams, "heartrate")
+        dist = safe_get(streams, "distance")
+        cad = safe_get(streams, "cadence")
+        alt = safe_get(streams, "altitude")
 
         stream = (
             session.query(ActivityStream)
