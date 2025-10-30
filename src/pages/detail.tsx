@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import HeartRateChart from '@/components/Detail/HeartRate/HeartRateChart';
+import DetailActivity from '@/components/Detail/Activity';
 
 export default function DetailPage() {
   const { id } = useParams();
@@ -9,7 +10,7 @@ export default function DetailPage() {
   const [umur, setUmur] = useState(0);
 
   useEffect(() => {
-    const tanggalLahir = new Date('1997-01-07');
+    const tanggalLahir = new Date('1997-01-01');
     const hariIni = new Date();
 
     let usia = hariIni.getFullYear() - tanggalLahir.getFullYear();
@@ -35,6 +36,9 @@ export default function DetailPage() {
     <div className="activity-detail">
       <h1>Activity {id}</h1>
 
+      <section id="detail">
+        <DetailActivity id={id ? parseInt(id) : null} />
+      </section>
       <section id="map">[Map coming soon]</section>
 
       <section id="heart-rate-chart">
