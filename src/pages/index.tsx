@@ -26,6 +26,7 @@ import {
   RunIds,
 } from '@/utils/utils';
 import { useTheme } from '@/hooks/useTheme';
+import DetailActivity from '@/components/Detail/Activity';
 import { Link } from 'react-router-dom';
 
 const Index = () => {
@@ -390,24 +391,51 @@ const Index = () => {
         )}
       </div>
       <div className="w-full lg:w-2/3" id="map-container">
-        <RunMap
-          title={title}
-          viewState={viewState}
-          geoData={animatedGeoData}
-          setViewState={setViewState}
-          changeYear={changeYear}
-          thisYear={year}
-          animationTrigger={animationTrigger}
-        />
+        <>
+          <RunMap
+            title={title}
+            viewState={viewState}
+            geoData={animatedGeoData}
+            setViewState={setViewState}
+            changeYear={changeYear}
+            thisYear={year}
+            animationTrigger={animationTrigger}
+          />
+          <hr />
+          {singleRunId && (
+            <>
+              <DetailActivity id={singleRunId} />
+              <div className="flex items-center justify-center">
+                <Link
+                  to={`/detail/${singleRunId}`}
+                  target="_blank"
+                  className="mt-8 rounded-full bg-orange-500 px-8 py-3 text-lg font-semibold text-white transition-all hover:bg-orange-600"
+                >
+                  Detail
+                </Link>
+              </div>
+              <hr />
+            </>
+          )}
+        </>
         {year === 'Total' ? (
           <SVGStat />
         ) : (
           <>
-            {singleRunId && (
-              <Link to={`/detail/${singleRunId}`} target="_blank">
-                <button>Buka Detail Halaman</button>
-              </Link>
-            )}
+            <div>
+              <select defaultValue={''}>
+                <option value={''}>All Type</option>
+                <option value={'run'}>Run</option>
+                <option value={'walk'}>Walk</option>
+                <option value={'hike'}>Hike</option>
+              </select>
+              <select defaultValue={10}>
+                <option value={10}>10</option>
+                <option value={30}>30</option>
+                <option value={50}>50</option>
+                <option value={99}>All</option>
+              </select>
+            </div>
             <RunTable
               runs={runs}
               locateActivity={locateActivity}
