@@ -15,7 +15,7 @@ const getBasePath = () => {
 };
 
 const data: ISiteMetadataResult = {
-  siteTitle: 'Hellroin Running Page',
+  siteTitle: 'Hellroin Running Journey',
   siteUrl: getBasePath(),
   logo: 'https://avatars.githubusercontent.com/u/20856300?v=4',
   description: 'Hellroin Run Archive',
