@@ -18,6 +18,8 @@ import {
   RUN_TRAIL_COLOR,
   MAP_TILE_STYLES,
   MAP_TILE_STYLE_DARK,
+  WALKING_TITLES,
+  HIKING_TITLES,
 } from './const';
 import {
   FeatureCollection,
@@ -68,7 +70,7 @@ const formatPace = (d: number): string => {
   const pace = (1000.0 / 60.0) * (1.0 / d);
   const minutes = Math.floor(pace);
   const seconds = Math.floor((pace - minutes) * 60.0);
-  return `${minutes}'${seconds.toFixed(0).toString().padStart(2, '0')}"`;
+  return `${minutes}:${seconds.toFixed(0).toString().padStart(2, '0')} /km`;
 };
 
 const convertMovingTime2Sec = (moving_time: string): number => {
@@ -93,6 +95,9 @@ const formatRunTime = (moving_time: string): string => {
   }
   return minutes + 'min';
 };
+
+const timeToMinute = (moving_time: string): number =>
+  convertMovingTime2Sec(moving_time) / 60;
 
 // for scroll to the map
 const scrollToMap = () => {
@@ -305,11 +310,11 @@ const getActivitySport = (act: Activity): string => {
       return ACTIVITY_TYPES.RUN_TREADMILL_TITLE;
     else return ACTIVITY_TYPES.RUN_GENERIC_TITLE;
   } else if (act.type === 'Hike') {
-    return ACTIVITY_TYPES.HIKING_TITLE;
+    return ACTIVITY_TYPES.HIKING_GENERIC_TITLE;
   } else if (act.type === 'Cycle') {
     return ACTIVITY_TYPES.CYCLING_TITLE;
   } else if (act.type === 'Walk') {
-    return ACTIVITY_TYPES.WALKING_TITLE;
+    return ACTIVITY_TYPES.WALKING_GENERIC_TITLE;
   }
   // if act.type contains 'skiing'
   else if (act.type.includes('skiing')) {
@@ -331,28 +336,61 @@ const titleForRun = (run: Activity): string => {
       return `${city} ${activity_sport}`;
     }
   }
-  // 3. use time+length if location or type is not available
+
   const runDistance = run.distance / 1000;
   const runHour = +run.start_date_local.slice(11, 13);
-  if (runDistance > 20 && runDistance < 40) {
-    return RUN_TITLES.HALF_MARATHON_RUN_TITLE;
+  if (run.type === 'Run') {
+    // 3. use time+length if location or type is not available
+    if (runDistance > 20 && runDistance < 40) {
+      return RUN_TITLES.HALF_MARATHON_RUN_TITLE;
+    }
+    if (runDistance >= 40) {
+      return RUN_TITLES.FULL_MARATHON_RUN_TITLE;
+    }
+    if (runHour >= 0 && runHour <= 10) {
+      return RUN_TITLES.MORNING_RUN_TITLE;
+    }
+    if (runHour > 10 && runHour <= 14) {
+      return RUN_TITLES.MIDDAY_RUN_TITLE;
+    }
+    if (runHour > 14 && runHour <= 18) {
+      return RUN_TITLES.AFTERNOON_RUN_TITLE;
+    }
+    if (runHour > 18 && runHour <= 21) {
+      return RUN_TITLES.EVENING_RUN_TITLE;
+    }
+    return RUN_TITLES.NIGHT_RUN_TITLE;
+  } else if (run.type === 'Walk') {
+    if (runHour >= 0 && runHour <= 10) {
+      return WALKING_TITLES.MORNING_WALKING_TITLE;
+    }
+    if (runHour > 10 && runHour <= 14) {
+      return WALKING_TITLES.MIDDAY_WALKING_TITLE;
+    }
+    if (runHour > 14 && runHour <= 18) {
+      return WALKING_TITLES.AFTERNOON_WALKING_TITLE;
+    }
+    if (runHour > 18 && runHour <= 21) {
+      return WALKING_TITLES.EVENING_WALKING_TITLE;
+    }
+    return WALKING_TITLES.NIGHT_WALKING_TITLE;
+  } else if (run.type === 'Hike') {
+    if (runHour >= 0 && runHour <= 10) {
+      return HIKING_TITLES.MORNING_HIKING_TITLE;
+    }
+    if (runHour > 10 && runHour <= 14) {
+      return HIKING_TITLES.MIDDAY_HIKING_TITLE;
+    }
+    if (runHour > 14 && runHour <= 18) {
+      return HIKING_TITLES.AFTERNOON_HIKING_TITLE;
+    }
+    if (runHour > 18 && runHour <= 21) {
+      return HIKING_TITLES.EVENING_HIKING_TITLE;
+    }
+    return HIKING_TITLES.NIGHT_HIKING_TITLE;
+  } else {
+    return run.name;
   }
-  if (runDistance >= 40) {
-    return RUN_TITLES.FULL_MARATHON_RUN_TITLE;
-  }
-  if (runHour >= 0 && runHour <= 10) {
-    return RUN_TITLES.MORNING_RUN_TITLE;
-  }
-  if (runHour > 10 && runHour <= 14) {
-    return RUN_TITLES.MIDDAY_RUN_TITLE;
-  }
-  if (runHour > 14 && runHour <= 18) {
-    return RUN_TITLES.AFTERNOON_RUN_TITLE;
-  }
-  if (runHour > 18 && runHour <= 21) {
-    return RUN_TITLES.EVENING_RUN_TITLE;
-  }
-  return RUN_TITLES.NIGHT_RUN_TITLE;
 };
 
 export interface IViewState {
@@ -483,6 +521,75 @@ const getMapTheme = (): string => {
   }
 };
 
+/**
+ * Hitung kalori (Keytel et al., model tanpa VO2max)
+ * Input:
+ *  - hrAvg: rata2 HR (bpm)
+ *  - weightKg: berat badan (kg)
+ *  - age: usia (tahun)
+ *  - gender: 'male' | 'female'
+ *  - duration: durasi aktivitas (menit)
+ *
+ * Output: estimasi kalori dalam kcal (dibulatkan)
+ *
+ * Formula (versi untuk berat dalam kg):
+ *  Men:  EE = ([0.2017*age] + [0.1988*weightKg] + [0.6309*hrAvg] - 55.0969) * (durationMin / 4.184)
+ *  Women: EE = ([0.074*age] + [0.05741*weightKg] + [0.4472*hrAvg] - 20.4022) * (durationMin / 4.184)
+ */
+function calculateCalories(
+  hrAvg: number,
+  weightKg: number,
+  age: number,
+  gender: string,
+  duration: string,
+  distance: number
+) {
+  const durationMin = timeToMinute(duration);
+  const distanceKm = distance / 1000.0;
+
+  // HRmax (Keytel, lebih akurat dari 220 - age)
+  const hrMax = 208 - 0.7 * age;
+  const hrPercent = (hrAvg / hrMax) * 100;
+
+  // Model jarak (low intensity)
+  const distanceKcal = weightKg * distanceKm * 1.036;
+
+  // Model Keytel (vigorous)
+  let base;
+  if (gender === 'male') {
+    base = 0.2017 * age + 0.1988 * weightKg + 0.6309 * hrAvg - 55.0969;
+  } else {
+    base = 0.074 * age + 0.05741 * weightKg + 0.4472 * hrAvg - 20.4022;
+  }
+  const keytelKcal = (base * durationMin) / 4.184;
+
+  let kcal;
+  let effortLabel;
+
+  // Hybrid blending berdasarkan HR zone
+  if (hrPercent < 75) {
+    kcal = distanceKcal;
+    effortLabel = 'Easy';
+  } else if (hrPercent < 85) {
+    const t = (hrPercent - 75) / 10; // 0–1 antara 75–85%
+    kcal = distanceKcal * (1 - t) + keytelKcal * t;
+    effortLabel = 'Moderate';
+  } else if (hrPercent < 90) {
+    kcal = keytelKcal;
+    effortLabel = 'Hard';
+  } else {
+    kcal = keytelKcal * 1.1; // tambahan kecil untuk zona maksimal
+    effortLabel = 'Max Effort';
+  }
+
+  return {
+    calories: Math.round(Math.max(0, kcal)),
+    hrMax: Math.round(hrMax),
+    hrPercent: Number(hrPercent.toFixed(1)),
+    effortLabel,
+  };
+}
+
 export {
   titleForShow,
   formatPace,
@@ -506,4 +613,5 @@ export {
   getMapStyle,
   isTouchDevice,
   getMapTheme,
+  calculateCalories,
 };
