@@ -3,7 +3,7 @@ const MAPBOX_TOKEN =
   // For security reasons, please avoid using the default public token provided by Mapbox as much as possible.
   // Instead, manually add a new token and apply URL restrictions.
   // (please refer to https://github.com/yihong0618/running_page/issues/643#issuecomment-2042668580)
-  'pk.eyJ1IjoieWlob25nMDYxOCIsImEiOiJjbWYxdXR4YncwMTJtMm5zOTE4eTZpMGdtIn0.OnsXdwkZFztR8a5Ph_T-xg';
+  'pk.eyJ1IjoiemhlbGVhcm4iLCJhIjoiY2xjMnR3MXFzMXJmczN2bWRnMDk0cHkwaiJ9.5Hk5zVnEMLVMnwHveHHjeA';
 const MUNICIPALITY_CITIES_ARR = [
   '北京市',
   '上海市',
@@ -48,7 +48,7 @@ const LIGHTS_ON = false;
 //set to `true` if you want to show the 'Elevation Gain' column
 const SHOW_ELEVATION_GAIN = true;
 // richer title for the activity types (like garmin style)
-const RICH_TITLE = true;
+const RICH_TITLE = false;
 
 // IF you are outside China please make sure IS_CHINESE = false
 const IS_CHINESE = false;
@@ -76,10 +76,20 @@ const NIGHT_RUN_TITLE = IS_CHINESE ? '夜晚跑步' : 'Night Run';
 const RUN_GENERIC_TITLE = IS_CHINESE ? '跑步' : 'Run';
 const RUN_TRAIL_TITLE = IS_CHINESE ? '越野跑' : 'Trail Run';
 const RUN_TREADMILL_TITLE = IS_CHINESE ? '跑步机' : 'Treadmill Run';
-const HIKING_TITLE = IS_CHINESE ? '徒步' : 'Hiking';
+const MORNING_HIKING_TITLE = 'Morning Hike';
+const MIDDAY_HIKING_TITLE = 'Midday Hike';
+const AFTERNOON_HIKING_TITLE = 'Afternoon Hike';
+const EVENING_HIKING_TITLE = 'Evening Hike';
+const NIGHT_HIKING_TITLE = 'Night Hike';
+const HIKING_GENERIC_TITLE = 'Hiking';
 const CYCLING_TITLE = IS_CHINESE ? '骑行' : 'Cycling';
 const SKIING_TITLE = IS_CHINESE ? '滑雪' : 'Skiing';
-const WALKING_TITLE = IS_CHINESE ? '步行' : 'Walking';
+const MORNING_WALKING_TITLE = 'Morning Walk';
+const MIDDAY_WALKING_TITLE = 'Midday Walk';
+const AFTERNOON_WALKING_TITLE = 'Afternoon Walk';
+const EVENING_WALKING_TITLE = 'Evening Walk';
+const NIGHT_WALKING_TITLE = 'Night Walk';
+const WALKING_GENERIC_TITLE = 'Walking';
 const SWIMMING_TITLE = IS_CHINESE ? '游泳' : 'Swimming';
 const ALL_TITLE = IS_CHINESE ? '所有' : 'All';
 const ACTIVITY_COUNT_TITLE = IS_CHINESE ? '活动次数' : 'Activity Count';
@@ -106,10 +116,10 @@ const ACTIVITY_TYPES = {
   RUN_GENERIC_TITLE,
   RUN_TRAIL_TITLE,
   RUN_TREADMILL_TITLE,
-  HIKING_TITLE,
+  HIKING_GENERIC_TITLE,
   CYCLING_TITLE,
   SKIING_TITLE,
-  WALKING_TITLE,
+  WALKING_GENERIC_TITLE,
   SWIMMING_TITLE,
   ALL_TITLE,
 };
@@ -123,6 +133,23 @@ const RUN_TITLES = {
   EVENING_RUN_TITLE,
   NIGHT_RUN_TITLE,
 };
+
+const WALKING_TITLES = {
+  MORNING_WALKING_TITLE,
+  MIDDAY_WALKING_TITLE,
+  AFTERNOON_WALKING_TITLE,
+  EVENING_WALKING_TITLE,
+  NIGHT_WALKING_TITLE,
+};
+
+const HIKING_TITLES = {
+  MORNING_HIKING_TITLE,
+  MIDDAY_HIKING_TITLE,
+  AFTERNOON_HIKING_TITLE,
+  EVENING_HIKING_TITLE,
+  NIGHT_HIKING_TITLE,
+};
+
 const ACTIVITY_TOTAL = {
   ACTIVITY_COUNT_TITLE,
   MAX_DISTANCE_TITLE,
@@ -152,6 +179,8 @@ export {
   ROAD_LABEL_DISPLAY,
   INFO_MESSAGE,
   RUN_TITLES,
+  WALKING_TITLES,
+  HIKING_TITLES,
   USE_ANIMATION_FOR_GRID,
   USE_DASH_LINE,
   LINE_OPACITY,
