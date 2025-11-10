@@ -1,5 +1,5 @@
 import useActivities from '@/hooks/useActivities';
-import { Activity, calculateCalories, formatPace } from '@/utils/utils';
+import { Activity, calculateCalories, formatPace, titleForRun } from '@/utils/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { Flame, Heart, Clock, Mountain, Footprints, Gauge } from 'lucide-react';
 import StravaGenerateLayout from '@/components/Layout/StravaGenerateLayout';
@@ -59,7 +59,7 @@ const DetailActivity = ({ id }: { id: number | null | undefined }) => {
   return (
     <div className="mx-auto max-w-md space-y-4 rounded-2xl bg-gradient-to-b from-gray-900 to-gray-800 p-6 text-white shadow-lg">
       <h2 className="mb-2 text-center text-xl font-bold">
-        {activity?.name || 'Detail Aktivitas'}
+        {titleForRun(activity) || 'Detail Aktivitas'}
       </h2>
 
       {/* Main Stats Grid */}
